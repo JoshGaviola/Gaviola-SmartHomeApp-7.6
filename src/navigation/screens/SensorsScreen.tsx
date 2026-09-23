@@ -1,146 +1,112 @@
-import React from 'react';
-
+import { Ionicons } from "@expo/vector-icons";
 import {
-  View,
-  Text,
-  StyleSheet,
+  ActivityIndicator,
+  Pressable,
   ScrollView,
-  Switch,
-} from 'react-native';
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useIoT } from "../../context/IoTContext";
 
-import { Ionicons } from '@expo/vector-icons';
-
-import { useIoT } from '../../context/IoTContext';
-
-export default function DevicesScreen() {
-
-  const {
-    devices,
-    toggleDevice,
-  } = useIoT();
+export default function SensorsScreen() {
+  const { sensors, loading, refreshSensors } = useIoT();
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Sensors</Text>
+      <Text style={styles.subtitle}>Live readings from your smart home</Text>
 
-      <Text style={styles.title}>
-        Devices
-      </Text>
-
-      <Text style={styles.subtitle}>
-        Control your connected devices
-      </Text>
-
-      {devices.map((device) => (
-
-        <View
-          key={device.id}
-          style={styles.deviceCard}
-        >
-
-          <View style={styles.deviceInfo}>
-
-            <View style={styles.iconContainer}>
-
-              <Ionicons
-                name={device.icon}
-                size={28}
-              />
-
-            </View>
-
-            <View style={styles.deviceDetails}>
-
-              <Text style={styles.deviceName}>
-                {device.name}
-              </Text>
-
-              <Text style={styles.deviceType}>
-                {device.type}
-              </Text>
-
-              <Text style={styles.deviceState}>
-                {device.status ? 'ON' : 'OFF'}
-              </Text>
-
-            </View>
-
-          </View>
-
-          <Switch
-            value={device.status}
-            onValueChange={(value) => {
-              toggleDevice(device.id, value);
-            }}
-          />
-
+      <View style={styles.readings}>
+        <View style={styles.sensorCard}>
+          <Ionicons name="thermometer-outline" size={30} />
+          <Text style={styles.sensorLabel}>Temperature</Text>
+          <Text style={styles.sensorValue}>{sensors.temperature} °C</Text>
         </View>
 
-      ))}
+        <View style={styles.sensorCard}>
+          <Ionicons name="water-outline" size={30} />
+          <Text style={styles.sensorLabel}>Humidity</Text>
+          <Text style={styles.sensorValue}>{sensors.humidity} %</Text>
+        </View>
 
+        <View style={styles.sensorCard}>
+          <Ionicons name="sunny-outline" size={30} />
+          <Text style={styles.sensorLabel}>Light Level</Text>
+          <Text style={styles.sensorValue}>{sensors.lightLevel} lux</Text>
+        </View>
+      </View>
+
+      <Pressable
+        accessibilityRole="button"
+        disabled={loading}
+        onPress={() => {
+          void refreshSensors();
+        }}
+        style={({ pressed }) => [
+          styles.refreshButton,
+          pressed && !loading && styles.refreshButtonPressed,
+          loading && styles.refreshButtonDisabled,
+        ]}
+      >
+        {loading && <ActivityIndicator color="#ffffff" size="small" />}
+        <Text style={styles.refreshButtonText}>
+          {loading ? "Refreshing..." : "Refresh Sensors"}
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
-    flex: 1,
     padding: 20,
   },
-
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-
   subtitle: {
     fontSize: 14,
     marginTop: 5,
     marginBottom: 25,
   },
-
-  deviceCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 18,
+  readings: {
+    gap: 15,
+  },
+  sensorCard: {
+    padding: 20,
     borderRadius: 15,
-    backgroundColor: '#eeeeee',
-    marginBottom: 15,
+    backgroundColor: "#eeeeee",
   },
-
-  deviceInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-
-  deviceDetails: {
-    flex: 1,
-  },
-
-  deviceName: {
+  sensorLabel: {
     fontSize: 16,
-    fontWeight: 'bold',
+    marginTop: 10,
   },
-
-  deviceType: {
-    fontSize: 13,
-    marginTop: 3,
-  },
-
-  deviceState: {
-    fontSize: 12,
+  sensorValue: {
+    fontSize: 28,
+    fontWeight: "bold",
     marginTop: 5,
   },
-
+  refreshButton: {
+    minHeight: 48,
+    marginTop: 25,
+    borderRadius: 8,
+    backgroundColor: "#208AEF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 10,
+  },
+  refreshButtonPressed: {
+    opacity: 0.8,
+  },
+  refreshButtonDisabled: {
+    opacity: 0.6,
+  },
+  refreshButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });

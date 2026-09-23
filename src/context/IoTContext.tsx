@@ -9,6 +9,7 @@ import {
 type IoTContextType = {
   devices: Device[];
   sensors: SensorData;
+  refreshSensors: () => Promise<void>;
   toggleDevice: (id: number, value: boolean) => Promise<void>;
   updatingDeviceId: number | null;
   gatewayConnected: boolean;
@@ -20,7 +21,7 @@ const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({ children }: { children: React.ReactNode }) {
   const [gatewayConnected] = useState(true);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error] = useState<string | null>(null);
   const [updatingDeviceId, setUpdatingDeviceId] = useState<number | null>(null);
 
@@ -56,17 +57,40 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
     status: deviceStatus[device.id],
   }));
 
-  const sensors: SensorData = {
-    temperature: 100,
-    humidity: 99,
-    lightLevel: 1000,
+  const [sensors, setSensors] = useState<SensorData>({
+    temperature: 28,
+    humidity: 65,
+    lightLevel: 720,
+  });
+
+  const refreshSensors = async () => {
+    setLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    setSensors((currentSensors) => ({
+      temperature:
+        currentSensors.temperature >= 35 ? 24 : currentSensors.temperature + 1,
+      humidity:
+        currentSensors.humidity >= 90 ? 55 : currentSensors.humidity + 5,
+      lightLevel:
+        currentSensors.lightLevel >= 1000
+          ? 360
+          : currentSensors.lightLevel + 80,
+    }));
+    setLoading(false);
+  };
+
+  const currentSensors: SensorData = {
+    ...sensors,
   };
 
   return (
     <IoTContext.Provider
       value={{
         devices: updatedDevices,
-        sensors,
+        sensors: currentSensors,
+        refreshSensors,
         toggleDevice,
         gatewayConnected,
         loading,
