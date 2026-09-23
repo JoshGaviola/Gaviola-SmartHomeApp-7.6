@@ -1,21 +1,43 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { useIoT } from "../../context/IoTContext";
 
 export default function SensorsScreen() {
-  const { sensors, loading, refreshSensors } = useIoT();
+  const { sensors, loading, sensorError, refreshSensors } = useIoT();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sensors</Text>
       <Text style={styles.subtitle}>Live readings from your smart home</Text>
+
+      {loading && (
+        <View style={styles.feedback}>
+          <ActivityIndicator size="small" />
+          <Text>Refreshing Sensors...</Text>
+        </View>
+      )}
+
+      {sensorError && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{sensorError}</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              void refreshSensors();
+            }}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </Pressable>
+        </View>
+      )}
 
       <View style={styles.readings}>
         <View style={styles.sensorCard}>
@@ -87,6 +109,33 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginTop: 5,
+  },
+  feedback: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 15,
+  },
+  errorBox: {
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: "#ffebee",
+    marginBottom: 15,
+  },
+  errorText: {
+    color: "#b00020",
+    marginBottom: 10,
+  },
+  retryButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    backgroundColor: "#b00020",
+  },
+  retryButtonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   refreshButton: {
     minHeight: 48,

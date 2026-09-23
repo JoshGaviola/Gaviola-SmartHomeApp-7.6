@@ -1,5 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import {
     sampleDevices,
     type Device,
@@ -15,10 +20,15 @@ type IoTContextType = {
   devices: Device[];
   sensors: SensorData;
   refreshSensors: () => Promise<void>;
+  retryDevices: () => Promise<void>;
+  retryDeviceUpdate: () => Promise<void>;
   toggleDevice: (id: number, value: boolean) => Promise<void>;
   updatingDeviceId: number | null;
   gatewayConnected: boolean;
   loading: boolean;
+  devicesLoading: boolean;
+  sensorError: string | null;
+  deviceError: string | null;
   error: string | null;
 };
 
@@ -26,81 +36,84 @@ const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({ children }: { children: React.ReactNode }) {
   const [gatewayConnected] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [updatingDeviceId, setUpdatingDeviceId] = useState<number | null>(null);
-
   const [devices, setDevices] = useState<Device[]>(sampleDevices);
   const [sensors, setSensors] = useState<SensorData>({
     temperature: 28,
     humidity: 65,
     lightLevel: 720,
   });
+  const [loading, setLoading] = useState(true);
+  const [devicesLoading, setDevicesLoading] = useState(true);
+  const [sensorError, setSensorError] = useState<string | null>(null);
+  const [deviceError, setDeviceError] = useState<string | null>(null);
+  const [updatingDeviceId, setUpdatingDeviceId] = useState<number | null>(null);
+  const [lastDeviceCommand, setLastDeviceCommand] = useState<{
+    id: number;
+    value: boolean;
+  } | null>(null);
+
+  const loadDevices = useCallback(async () => {
+    setDevicesLoading(true);
+    setDeviceError(null);
+
+    try {
+      setDevices(await getDevices());
+    } catch {
+      setDeviceError("Unable to retrieve devices.");
+    } finally {
+      setDevicesLoading(false);
+    }
+  }, []);
+
+  const refreshSensors = useCallback(async () => {
+    setLoading(true);
+    setSensorError(null);
+
+    try {
+      setSensors(await getSensorData());
+    } catch {
+      setSensorError("Unable to retrieve sensor data.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let active = true;
+    const request = setTimeout(() => {
+      void loadDevices();
+      void refreshSensors();
+    }, 0);
 
-    Promise.all([getDevices(), getSensorData()])
-      .then(([loadedDevices, loadedSensors]) => {
-        if (active) {
-          setDevices(loadedDevices);
-          setSensors(loadedSensors);
-        }
-      })
-      .catch((serviceError: Error) => {
-        if (active) {
-          setError(serviceError.message);
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
+    return () => clearTimeout(request);
+  }, [loadDevices, refreshSensors]);
 
   const toggleDevice = async (id: number, value: boolean) => {
     if (!gatewayConnected || updatingDeviceId !== null) {
       return;
     }
 
+    const device = devices.find((item) => item.id === id);
     setUpdatingDeviceId(id);
-
-    setError(null);
+    setDeviceError(null);
+    setLastDeviceCommand({ id, value });
 
     try {
       setDevices(await updateDeviceStatus(id, value));
-    } catch (serviceError) {
-      setError(
-        serviceError instanceof Error
-          ? serviceError.message
-          : "Unable to update the device.",
-      );
+      setLastDeviceCommand(null);
+    } catch {
+      setDeviceError(`Unable to update ${device?.name ?? "device"}.`);
     } finally {
       setUpdatingDeviceId(null);
     }
   };
 
-  const refreshSensors = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      setSensors(await getSensorData());
-    } catch (serviceError) {
-      setError(
-        serviceError instanceof Error
-          ? serviceError.message
-          : "Unable to refresh sensors.",
-      );
-    } finally {
-      setLoading(false);
+  const retryDeviceUpdate = async () => {
+    if (lastDeviceCommand) {
+      await toggleDevice(lastDeviceCommand.id, lastDeviceCommand.value);
     }
   };
+
+  const error = sensorError ?? deviceError;
 
   return (
     <IoTContext.Provider
@@ -108,11 +121,16 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
         devices,
         sensors,
         refreshSensors,
+        retryDevices: loadDevices,
+        retryDeviceUpdate,
         toggleDevice,
+        updatingDeviceId,
         gatewayConnected,
         loading,
+        devicesLoading,
+        sensorError,
+        deviceError,
         error,
-        updatingDeviceId,
       }}
     >
       {children}

@@ -1,10 +1,26 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    View,
+} from "react-native";
 import { useIoT } from "../../context/IoTContext";
 
 export default function DevicesScreen() {
-  const { devices, gatewayConnected, toggleDevice, updatingDeviceId } =
-    useIoT();
+  const {
+    devices,
+    devicesLoading,
+    deviceError,
+    gatewayConnected,
+    retryDeviceUpdate,
+    retryDevices,
+    toggleDevice,
+    updatingDeviceId,
+  } = useIoT();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -12,7 +28,31 @@ export default function DevicesScreen() {
       <Text style={styles.subtitle}>Control your connected devices</Text>
 
       {!gatewayConnected && (
-        <Text style={styles.gatewayStatus}>Gateway disconnected</Text>
+        <Text style={styles.gatewayStatus}>IoT Gateway is disconnected.</Text>
+      )}
+
+      {devicesLoading && (
+        <View style={styles.feedback}>
+          <ActivityIndicator size="small" />
+          <Text>Loading devices...</Text>
+        </View>
+      )}
+
+      {deviceError && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{deviceError}</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              void (deviceError.startsWith("Unable to update")
+                ? retryDeviceUpdate()
+                : retryDevices());
+            }}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </Pressable>
+        </View>
       )}
 
       {devices.map((device) => {
@@ -62,6 +102,33 @@ const styles = StyleSheet.create({
   gatewayStatus: {
     color: "#b00020",
     marginBottom: 15,
+  },
+  feedback: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 15,
+  },
+  errorBox: {
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: "#ffebee",
+    marginBottom: 15,
+  },
+  errorText: {
+    color: "#b00020",
+    marginBottom: 10,
+  },
+  retryButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    backgroundColor: "#b00020",
+  },
+  retryButtonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   deviceCard: {
     flexDirection: "row",
