@@ -1,187 +1,97 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Switch, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { useIoT } from "../../context/IoTContext";
 
-export default function DashboardScreen() {
-  // const [deviceStatus, setDeviceStatus] = useState(
-  //     devices.reduce((acc, device) => {
-  //         acc[device.id] = device.status;
-  //         return acc;
-  //     }, {} as Record<number, boolean>)
-  // );
-
-  const { devices, sensors, toggleDevice } = useIoT();
+export default function DevicesScreen() {
+  const { devices, gatewayConnected, toggleDevice, updatingDeviceId } =
+    useIoT();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.greeting}>Good evening</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Devices</Text>
+      <Text style={styles.subtitle}>Control your connected devices</Text>
 
-      <Text style={styles.title}>IoT Dashboard</Text>
+      {!gatewayConnected && (
+        <Text style={styles.gatewayStatus}>Gateway disconnected</Text>
+      )}
 
-      <View style={styles.sensorRow}>
-        <View style={styles.sensorCard}>
-          <View style={styles.sensorHeader}>
-            <Ionicons name="water-outline" size={22} />
+      {devices.map((device) => {
+        const isUpdating = updatingDeviceId === device.id;
 
-            <Text style={styles.sensorLabel}>Temperature</Text>
-          </View>
+        return (
+          <View key={device.id} style={styles.deviceCard}>
+            <View style={styles.deviceInfo}>
+              <Ionicons name={device.icon} size={28} />
 
-          <Text style={styles.sensorValue}>{sensors.temperature}°C</Text>
-        </View>
-
-        <View style={styles.sensorCard}>
-          <View style={styles.sensorHeader}>
-            <Ionicons name="water-outline" size={22} />
-
-            <Text style={styles.sensorLabel}>Humidity</Text>
-          </View>
-
-          <Text style={styles.sensorValue}>{sensors.humidity}%</Text>
-        </View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Device Status</Text>
-
-      {/* <View style={styles.deviceCard}>
-
-                <View style={styles.deviceInfo}>
-                    <Text style={styles.deviceIcon}>
-                        💡
-                    </Text>
-
-                    <View>
-                        <Text style={styles.deviceName}>
-                            Living Room Light
-                        </Text>
-
-                        <Text style={styles.deviceType}>
-                            Smart Light
-                        </Text>
-                    </View>
-                </View>
-
-                <Text style={styles.deviceStatus}>
-                    ON
+              <View style={styles.deviceDetails}>
+                <Text style={styles.deviceName}>{device.name}</Text>
+                <Text style={styles.deviceType}>{device.type}</Text>
+                <Text style={styles.deviceState}>
+                  {isUpdating ? "Updating..." : device.status ? "ON" : "OFF"}
                 </Text>
-
+              </View>
             </View>
 
-        </View>
-    ); */}
-
-      {devices.map((device) => (
-        <View key={device.id} style={styles.deviceCard}>
-          <View style={styles.deviceInfo}>
-            <Ionicons name={device.icon} size={28} style={styles.deviceIcon} />
-
-            <View>
-              <Text style={styles.deviceName}>{device.name}</Text>
-
-              <Text style={styles.deviceType}>{device.type}</Text>
-
-              <Text style={styles.deviceState}>
-                {device.status ? "ON" : "OFF"}
-              </Text>
-            </View>
+            <Switch
+              value={device.status}
+              disabled={!gatewayConnected || isUpdating}
+              onValueChange={(value) => {
+                void toggleDevice(device.id, value);
+              }}
+            />
           </View>
-
-          <Switch
-            value={device.status}
-            onValueChange={(value) => {
-              toggleDevice(device.id, value);
-            }}
-          />
-        </View>
-      ))}
-    </View>
+        );
+      })}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
   },
-
-  greeting: {
-    fontSize: 14,
-  },
-
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    marginTop: 5,
   },
-
-  sensorRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 25,
-  },
-
-  sensorCard: {
-    flex: 1,
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: "#eeeeee",
-  },
-
-  sensorLabel: {
+  subtitle: {
     fontSize: 14,
+    marginTop: 5,
+    marginBottom: 25,
   },
-
-  sensorValue: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 10,
+  gatewayStatus: {
+    color: "#b00020",
+    marginBottom: 15,
   },
-
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 30,
-    marginBottom: 12,
-  },
-
   deviceCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 18,
-    borderRadius: 12,
+    borderRadius: 15,
     backgroundColor: "#eeeeee",
+    marginBottom: 15,
   },
-
   deviceInfo: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
+    gap: 15,
   },
-
-  deviceIcon: {
-    fontSize: 28,
-    marginRight: 12,
+  deviceDetails: {
+    flex: 1,
   },
-
   deviceName: {
     fontSize: 16,
     fontWeight: "bold",
   },
-
   deviceType: {
     fontSize: 13,
     marginTop: 3,
   },
-
-  deviceStatus: {
-    fontSize: 14,
+  deviceState: {
+    fontSize: 13,
     fontWeight: "bold",
+    marginTop: 3,
   },
-
-  sensorHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-
-  deviceState: {},
 });
