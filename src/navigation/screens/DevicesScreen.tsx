@@ -77,10 +77,10 @@ export default function DashboardScreen() {
             <View>
               <Text style={styles.deviceName}>{device.name}</Text>
 
-              <Text style={styles.deviceType}>
-                <Text style={styles.deviceState}>
-                  {device.status ? "ON" : "OFF"}
-                </Text>
+              <Text style={styles.deviceType}>{device.type}</Text>
+
+              <Text style={styles.deviceState}>
+                {device.status ? "ON" : "OFF"}
               </Text>
             </View>
           </View>
