@@ -1,19 +1,19 @@
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import {
-    sampleDevices,
-    type Device,
-    type SensorData,
+  sampleDevices,
+  type Device,
+  type SensorData,
 } from "../models/IoTModels";
 import {
-    getDevices,
-    getSensorData,
-    updateDeviceStatus,
+  getDevices,
+  getSensorData,
+  updateDeviceStatus,
 } from "../services/IoTService";
 
 type IoTContextType = {
@@ -23,6 +23,7 @@ type IoTContextType = {
   retryDevices: () => Promise<void>;
   retryDeviceUpdate: () => Promise<void>;
   toggleDevice: (id: number, value: boolean) => Promise<void>;
+  setGatewayConnected: (connected: boolean) => void;
   updatingDeviceId: number | null;
   gatewayConnected: boolean;
   loading: boolean;
@@ -35,7 +36,7 @@ type IoTContextType = {
 const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({ children }: { children: React.ReactNode }) {
-  const [gatewayConnected] = useState(true);
+  const [gatewayConnected, setGatewayConnected] = useState(true);
   const [devices, setDevices] = useState<Device[]>(sampleDevices);
   const [sensors, setSensors] = useState<SensorData>({
     temperature: 28,
@@ -124,6 +125,7 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
         retryDevices: loadDevices,
         retryDeviceUpdate,
         toggleDevice,
+        setGatewayConnected,
         updatingDeviceId,
         gatewayConnected,
         loading,

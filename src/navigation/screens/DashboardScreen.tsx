@@ -10,7 +10,8 @@ export default function DashboardScreen() {
   //     }, {} as Record<number, boolean>)
   // );
 
-  const { devices, sensors, toggleDevice } = useIoT();
+  const { devices, gatewayConnected, sensors, toggleDevice, updatingDeviceId } =
+    useIoT();
 
   return (
     <View style={styles.container}>
@@ -80,15 +81,20 @@ export default function DashboardScreen() {
               <Text style={styles.deviceType}>{device.type}</Text>
 
               <Text style={styles.deviceState}>
-                {device.status ? "ON" : "OFF"}
+                {updatingDeviceId === device.id
+                  ? "Updating..."
+                  : device.status
+                    ? "ON"
+                    : "OFF"}
               </Text>
             </View>
           </View>
 
           <Switch
             value={device.status}
+            disabled={!gatewayConnected || updatingDeviceId === device.id}
             onValueChange={(value) => {
-              toggleDevice(device.id, value);
+              void toggleDevice(device.id, value);
             }}
           />
         </View>
