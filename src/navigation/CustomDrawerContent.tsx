@@ -1,80 +1,71 @@
-import React from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-} from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
 import {
     DrawerContentScrollView,
     DrawerItemList,
-} from '@react-navigation/drawer';
+} from "@react-navigation/drawer";
 
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
+import { colors, radii, spacing, typography } from "../theme";
 
 export default function CustomDrawerContent(props: any) {
-    return (
-        <DrawerContentScrollView
-            {...props}
-            contentContainerStyle={styles.container}
-        >
+  return (
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={styles.container}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Ionicons
+            name="hardware-chip-outline"
+            size={38}
+            color={colors.teal}
+          />
+        </View>
 
-            {/* Header */}
-            <View style={styles.header}>
+        <Text style={styles.title}>IoT Home</Text>
 
-                <View style={styles.logoContainer}>
-                    <Ionicons
-                        name="hardware-chip-outline"
-                        size={40}
-                    />
-                </View>
+        <Text style={styles.subtitle}>Smart Environment</Text>
+      </View>
 
-                <Text style={styles.title}>
-                    IoT Home
-                </Text>
-
-                <Text style={styles.subtitle}>
-                    Smart Environment
-                </Text>
-
-            </View>
-
-            {/* Navigation Items */}
-            <View style={styles.menu}>
-                <DrawerItemList {...props} />
-            </View>
-
-        </DrawerContentScrollView>
-    );
+      {/* Navigation Items */}
+      <View style={styles.menu}>
+        <DrawerItemList {...props} />
+      </View>
+    </DrawerContentScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
 
-    container: {
-        flex: 1,
-    },
+  header: {
+    padding: spacing.xl,
+    alignItems: "center",
+    backgroundColor: colors.tealSoft,
+    margin: spacing.md,
+    borderRadius: radii.md,
+  },
 
-    header: {
-        padding: 20,
-        alignItems: 'center',
-    },
+  logoContainer: {
+    marginBottom: spacing.sm,
+  },
 
-    logoContainer: {
-        marginBottom: 10,
-    },
+  title: {
+    color: colors.ink,
+    ...typography.heading,
+  },
 
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-    },
+  subtitle: {
+    color: colors.muted,
+    ...typography.caption,
+    marginTop: spacing.xs,
+  },
 
-    subtitle: {
-        fontSize: 13,
-        marginTop: 4,
-    },
-
-    menu: {
-        marginTop: 10,
-    },
-
+  menu: {
+    marginTop: spacing.sm,
+  },
 });

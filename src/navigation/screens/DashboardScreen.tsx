@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Switch, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
+import { colors, radii, shadows, spacing, typography } from "../../theme";
 
 export default function DashboardScreen() {
   // const [deviceStatus, setDeviceStatus] = useState(
@@ -14,36 +16,35 @@ export default function DashboardScreen() {
     useIoT();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.greeting}>Good evening</Text>
+    <AppScreen>
+      <ScrollView contentContainerStyle={styles.container}>
+        <ScreenHeader title="Good evening" subtitle="Your home at a glance" />
 
-      <Text style={styles.title}>IoT Dashboard</Text>
+        <View style={styles.sensorRow}>
+          <View style={styles.sensorCard}>
+            <View style={styles.sensorHeader}>
+              <Ionicons name="water-outline" size={22} />
 
-      <View style={styles.sensorRow}>
-        <View style={styles.sensorCard}>
-          <View style={styles.sensorHeader}>
-            <Ionicons name="water-outline" size={22} />
+              <Text style={styles.sensorLabel}>Temperature</Text>
+            </View>
 
-            <Text style={styles.sensorLabel}>Temperature</Text>
+            <Text style={styles.sensorValue}>{sensors.temperature}°C</Text>
           </View>
 
-          <Text style={styles.sensorValue}>{sensors.temperature}°C</Text>
-        </View>
+          <View style={styles.sensorCard}>
+            <View style={styles.sensorHeader}>
+              <Ionicons name="water-outline" size={22} />
 
-        <View style={styles.sensorCard}>
-          <View style={styles.sensorHeader}>
-            <Ionicons name="water-outline" size={22} />
+              <Text style={styles.sensorLabel}>Humidity</Text>
+            </View>
 
-            <Text style={styles.sensorLabel}>Humidity</Text>
+            <Text style={styles.sensorValue}>{sensors.humidity}%</Text>
           </View>
-
-          <Text style={styles.sensorValue}>{sensors.humidity}%</Text>
         </View>
-      </View>
 
-      <Text style={styles.sectionTitle}>Device Status</Text>
+        <Text style={styles.sectionTitle}>Device Status</Text>
 
-      {/* <View style={styles.deviceCard}>
+        {/* <View style={styles.deviceCard}>
 
                 <View style={styles.deviceInfo}>
                     <Text style={styles.deviceIcon}>
@@ -70,92 +71,86 @@ export default function DashboardScreen() {
         </View>
     ); */}
 
-      {devices.map((device) => (
-        <View key={device.id} style={styles.deviceCard}>
-          <View style={styles.deviceInfo}>
-            <Ionicons name={device.icon} size={28} style={styles.deviceIcon} />
+        {devices.map((device) => (
+          <View key={device.id} style={styles.deviceCard}>
+            <View style={styles.deviceInfo}>
+              <Ionicons
+                name={device.icon}
+                size={28}
+                style={styles.deviceIcon}
+              />
 
-            <View>
-              <Text style={styles.deviceName}>{device.name}</Text>
+              <View>
+                <Text style={styles.deviceName}>{device.name}</Text>
 
-              <Text style={styles.deviceType}>{device.type}</Text>
+                <Text style={styles.deviceType}>{device.type}</Text>
 
-              <Text style={styles.deviceState}>
-                {updatingDeviceId === device.id
-                  ? "Updating..."
-                  : device.status
-                    ? "ON"
-                    : "OFF"}
-              </Text>
+                <Text style={styles.deviceState}>
+                  {updatingDeviceId === device.id
+                    ? "Updating..."
+                    : device.status
+                      ? "ON"
+                      : "OFF"}
+                </Text>
+              </View>
             </View>
-          </View>
 
-          <Switch
-            value={device.status}
-            disabled={!gatewayConnected || updatingDeviceId === device.id}
-            onValueChange={(value) => {
-              void toggleDevice(device.id, value);
-            }}
-          />
-        </View>
-      ))}
-    </View>
+            <Switch
+              value={device.status}
+              disabled={!gatewayConnected || updatingDeviceId === device.id}
+              onValueChange={(value) => {
+                void toggleDevice(device.id, value);
+              }}
+            />
+          </View>
+        ))}
+      </ScrollView>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
+    paddingBottom: spacing.xxl,
   },
-
-  greeting: {
-    fontSize: 14,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 5,
-  },
-
   sensorRow: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 25,
+    gap: spacing.md,
+    paddingHorizontal: spacing.xl,
   },
-
   sensorCard: {
     flex: 1,
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: "#eeeeee",
+    padding: spacing.lg,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    ...shadows.card,
   },
-
   sensorLabel: {
-    fontSize: 14,
+    color: colors.muted,
+    ...typography.caption,
   },
-
   sensorValue: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 10,
+    color: colors.ink,
+    ...typography.metric,
+    marginTop: spacing.sm,
   },
-
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 30,
-    marginBottom: 12,
+    color: colors.ink,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.md,
+    marginHorizontal: spacing.xl,
+    ...typography.heading,
   },
-
   deviceCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 18,
-    borderRadius: 12,
-    backgroundColor: "#eeeeee",
+    padding: spacing.lg,
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    ...shadows.card,
   },
 
   deviceInfo: {
@@ -164,18 +159,20 @@ const styles = StyleSheet.create({
   },
 
   deviceIcon: {
-    fontSize: 28,
-    marginRight: 12,
+    marginRight: spacing.md,
+    color: colors.teal,
   },
 
   deviceName: {
-    fontSize: 16,
-    fontWeight: "bold",
+    color: colors.ink,
+    ...typography.body,
+    fontWeight: "700",
   },
 
   deviceType: {
-    fontSize: 13,
-    marginTop: 3,
+    color: colors.muted,
+    marginTop: spacing.xs,
+    ...typography.caption,
   },
 
   deviceStatus: {

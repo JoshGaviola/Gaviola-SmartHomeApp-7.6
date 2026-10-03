@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
+import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
+import { colors, radii, shadows, spacing, typography } from "../../theme";
 
 export default function SettingsScreen() {
   const { gatewayConnected, setGatewayConnected } = useIoT();
@@ -11,144 +13,139 @@ export default function SettingsScreen() {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
+    <AppScreen>
+      <ScrollView contentContainerStyle={styles.container}>
+        <ScreenHeader
+          title="Settings"
+          subtitle="Configure your IoT application"
+        />
 
-      <Text style={styles.title}>Settings</Text>
+        {/* General Settings */}
 
-      <Text style={styles.subtitle}>Configure your IoT application</Text>
+        <Text style={styles.sectionTitle}>General</Text>
 
-      {/* General Settings */}
+        {/* Notifications */}
 
-      <Text style={styles.sectionTitle}>General</Text>
+        <View style={styles.settingCard}>
+          <View style={styles.settingInfo}>
+            <Ionicons name="notifications-outline" size={26} />
 
-      {/* Notifications */}
+            <View style={styles.settingText}>
+              <Text style={styles.settingName}>Notifications</Text>
 
-      <View style={styles.settingCard}>
-        <View style={styles.settingInfo}>
-          <Ionicons name="notifications-outline" size={26} />
-
-          <View style={styles.settingText}>
-            <Text style={styles.settingName}>Notifications</Text>
-
-            <Text style={styles.settingDescription}>
-              Receive alerts from your IoT devices
-            </Text>
-          </View>
-        </View>
-
-        <Switch value={notifications} onValueChange={setNotifications} />
-      </View>
-
-      {/* Auto Connect */}
-
-      <View style={styles.settingCard}>
-        <View style={styles.settingInfo}>
-          <Ionicons name="wifi-outline" size={26} />
-
-          <View style={styles.settingText}>
-            <Text style={styles.settingName}>Auto Connect</Text>
-
-            <Text style={styles.settingDescription}>
-              Automatically connect to the IoT gateway
-            </Text>
-          </View>
-        </View>
-
-        <Switch value={autoConnect} onValueChange={setAutoConnect} />
-      </View>
-
-      {/* Dark Mode */}
-
-      <View style={styles.settingCard}>
-        <View style={styles.settingInfo}>
-          <Ionicons name="moon-outline" size={26} />
-
-          <View style={styles.settingText}>
-            <Text style={styles.settingName}>Dark Mode</Text>
-
-            <Text style={styles.settingDescription}>
-              Use a darker application appearance
-            </Text>
-          </View>
-        </View>
-
-        <Switch value={darkMode} onValueChange={setDarkMode} />
-      </View>
-
-      {/* Connection */}
-
-      <Text style={styles.sectionTitle}>Connection</Text>
-
-      <View style={styles.connectionCard}>
-        <View style={styles.connectionInfo}>
-          <Ionicons
-            name={
-              gatewayConnected ? "cloud-done-outline" : "cloud-offline-outline"
-            }
-            size={30}
-          />
-
-          <View>
-            <Text style={styles.connectionTitle}>IoT Gateway</Text>
-
-            <Text style={styles.connectionStatus}>
-              {gatewayConnected ? "Connected" : "IoT Gateway is disconnected."}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.gatewayControl}>
-          <View style={styles.settingText}>
-            <Text style={styles.settingName}>Gateway Connection</Text>
-
-            <Text style={styles.settingDescription}>
-              Enable or disable communication with the IoT gateway
-            </Text>
+              <Text style={styles.settingDescription}>
+                Receive alerts from your IoT devices
+              </Text>
+            </View>
           </View>
 
-          <Switch
-            value={gatewayConnected}
-            onValueChange={setGatewayConnected}
-          />
+          <Switch value={notifications} onValueChange={setNotifications} />
         </View>
-      </View>
-    </ScrollView>
+
+        {/* Auto Connect */}
+
+        <View style={styles.settingCard}>
+          <View style={styles.settingInfo}>
+            <Ionicons name="wifi-outline" size={26} />
+
+            <View style={styles.settingText}>
+              <Text style={styles.settingName}>Auto Connect</Text>
+
+              <Text style={styles.settingDescription}>
+                Automatically connect to the IoT gateway
+              </Text>
+            </View>
+          </View>
+
+          <Switch value={autoConnect} onValueChange={setAutoConnect} />
+        </View>
+
+        {/* Dark Mode */}
+
+        <View style={styles.settingCard}>
+          <View style={styles.settingInfo}>
+            <Ionicons name="moon-outline" size={26} />
+
+            <View style={styles.settingText}>
+              <Text style={styles.settingName}>Dark Mode</Text>
+
+              <Text style={styles.settingDescription}>
+                Use a darker application appearance
+              </Text>
+            </View>
+          </View>
+
+          <Switch value={darkMode} onValueChange={setDarkMode} />
+        </View>
+
+        {/* Connection */}
+
+        <Text style={styles.sectionTitle}>Connection</Text>
+
+        <View style={styles.connectionCard}>
+          <View style={styles.connectionInfo}>
+            <Ionicons
+              name={
+                gatewayConnected
+                  ? "cloud-done-outline"
+                  : "cloud-offline-outline"
+              }
+              size={30}
+            />
+
+            <View>
+              <Text style={styles.connectionTitle}>IoT Gateway</Text>
+
+              <Text style={styles.connectionStatus}>
+                {gatewayConnected
+                  ? "Connected"
+                  : "IoT Gateway is disconnected."}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.gatewayControl}>
+            <View style={styles.settingText}>
+              <Text style={styles.settingName}>Gateway Connection</Text>
+
+              <Text style={styles.settingDescription}>
+                Enable or disable communication with the IoT gateway
+              </Text>
+            </View>
+
+            <Switch
+              value={gatewayConnected}
+              onValueChange={setGatewayConnected}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
+    paddingBottom: spacing.xxl,
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-
-  subtitle: {
-    fontSize: 14,
-    marginTop: 5,
-    marginBottom: 25,
-  },
-
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    marginTop: 10,
+    color: colors.ink,
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+    marginTop: spacing.lg,
+    ...typography.heading,
   },
 
   settingCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 18,
-    borderRadius: 15,
-    backgroundColor: "#eeeeee",
-    marginBottom: 12,
+    padding: spacing.lg,
+    marginHorizontal: spacing.xl,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    marginBottom: spacing.md,
+    ...shadows.card,
   },
 
   settingInfo: {
@@ -158,24 +155,28 @@ const styles = StyleSheet.create({
   },
 
   settingText: {
-    marginLeft: 15,
+    marginLeft: spacing.md,
     flex: 1,
   },
 
   settingName: {
-    fontSize: 16,
-    fontWeight: "bold",
+    color: colors.ink,
+    ...typography.body,
+    fontWeight: "700",
   },
 
   settingDescription: {
-    fontSize: 12,
-    marginTop: 4,
+    color: colors.muted,
+    ...typography.caption,
+    marginTop: spacing.xs,
   },
 
   connectionCard: {
-    padding: 18,
-    borderRadius: 15,
-    backgroundColor: "#eeeeee",
+    padding: spacing.lg,
+    marginHorizontal: spacing.xl,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    ...shadows.card,
   },
 
   connectionInfo: {
@@ -186,18 +187,19 @@ const styles = StyleSheet.create({
   gatewayControl: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 18,
+    marginTop: spacing.lg,
   },
 
   connectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 15,
+    marginLeft: spacing.md,
   },
 
   connectionStatus: {
-    fontSize: 13,
-    marginLeft: 15,
-    marginTop: 3,
+    color: colors.muted,
+    ...typography.caption,
+    marginLeft: spacing.md,
+    marginTop: spacing.xs,
   },
 });
