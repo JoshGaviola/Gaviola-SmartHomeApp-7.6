@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import { colors } from "../theme";
+import { useTheme } from "../theme";
 import CustomDrawerContent from "./CustomDrawerContent";
 import DashboardScreen from "./screens/DashboardScreen";
 import DevicesScreen from "./screens/DevicesScreen";
@@ -11,6 +11,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigator() {
+  const { colors } = useTheme();
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}

@@ -1,19 +1,19 @@
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
 import {
-  sampleDevices,
-  type Device,
-  type SensorData,
+    sampleDevices,
+    type Device,
+    type SensorData,
 } from "../models/IoTModels";
 import {
-  getDevices,
-  getSensorData,
-  updateDeviceStatus,
+    getDevices,
+    getSensorData,
+    updateDeviceStatus,
 } from "../services/IoTService";
 
 type IoTContextType = {
@@ -24,8 +24,14 @@ type IoTContextType = {
   retryDeviceUpdate: () => Promise<void>;
   toggleDevice: (id: number, value: boolean) => Promise<void>;
   setGatewayConnected: (connected: boolean) => void;
+  setNotifications: (enabled: boolean) => void;
+  setAutoConnect: (enabled: boolean) => void;
+  setDarkMode: (enabled: boolean) => void;
   updatingDeviceId: number | null;
   gatewayConnected: boolean;
+  notifications: boolean;
+  autoConnect: boolean;
+  darkMode: boolean;
   loading: boolean;
   devicesLoading: boolean;
   sensorError: string | null;
@@ -37,6 +43,9 @@ const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({ children }: { children: React.ReactNode }) {
   const [gatewayConnected, setGatewayConnected] = useState(true);
+  const [notifications, setNotifications] = useState(true);
+  const [autoConnect, setAutoConnectState] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [devices, setDevices] = useState<Device[]>(sampleDevices);
   const [sensors, setSensors] = useState<SensorData>({
     temperature: 28,
@@ -79,14 +88,23 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const setAutoConnect = (enabled: boolean) => {
+    setAutoConnectState(enabled);
+    setGatewayConnected(enabled);
+  };
+
   useEffect(() => {
+    if (!gatewayConnected) {
+      return;
+    }
+
     const request = setTimeout(() => {
       void loadDevices();
       void refreshSensors();
     }, 0);
 
     return () => clearTimeout(request);
-  }, [loadDevices, refreshSensors]);
+  }, [gatewayConnected, loadDevices, refreshSensors]);
 
   const toggleDevice = async (id: number, value: boolean) => {
     if (!gatewayConnected || updatingDeviceId !== null) {
@@ -126,8 +144,14 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
         retryDeviceUpdate,
         toggleDevice,
         setGatewayConnected,
+        setNotifications,
+        setAutoConnect,
+        setDarkMode,
         updatingDeviceId,
         gatewayConnected,
+        notifications,
+        autoConnect,
+        darkMode,
         loading,
         devicesLoading,
         sensorError,

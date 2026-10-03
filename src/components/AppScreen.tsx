@@ -1,7 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import type { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
-import { colors, spacing, typography } from "../theme";
+import { spacing, typography, useTheme } from "../theme";
 
 type AppScreenProps = {
   children: ReactNode;
@@ -18,6 +20,9 @@ export function AppScreen({
   children,
   edges = ["top", "left", "right"],
 }: AppScreenProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <SafeAreaView edges={edges} style={styles.safeArea}>
       {children}
@@ -30,8 +35,23 @@ export function ScreenHeader({
   subtitle,
   rightContent,
 }: ScreenHeaderProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const navigation = useNavigation();
+
   return (
     <View style={styles.header}>
+      <Pressable
+        accessibilityLabel="Open navigation menu"
+        accessibilityRole="button"
+        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+        style={({ pressed }) => [
+          styles.menuButton,
+          pressed && styles.menuButtonPressed,
+        ]}
+      >
+        <Ionicons name="menu-outline" size={24} color={colors.ink} />
+      </Pressable>
       <View style={styles.headerCopy}>
         <Text style={styles.title}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -41,29 +61,42 @@ export function ScreenHeader({
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
-  },
-  headerCopy: {
-    flex: 1,
-  },
-  title: {
-    color: colors.ink,
-    ...typography.title,
-  },
-  subtitle: {
-    color: colors.muted,
-    marginTop: spacing.xs,
-    ...typography.body,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>["colors"]) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.lg,
+    },
+    menuButton: {
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 22,
+      backgroundColor: colors.surfaceMuted,
+      marginRight: spacing.md,
+    },
+    menuButtonPressed: {
+      opacity: 0.7,
+    },
+    headerCopy: {
+      flex: 1,
+    },
+    title: {
+      color: colors.ink,
+      ...typography.title,
+    },
+    subtitle: {
+      color: colors.muted,
+      marginTop: spacing.xs,
+      ...typography.body,
+    },
+  });
+}

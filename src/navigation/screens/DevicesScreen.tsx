@@ -10,7 +10,13 @@ import {
 } from "react-native";
 import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  type AppTheme,
+} from "../../theme";
 
 export default function DevicesScreen() {
   const {
@@ -23,6 +29,8 @@ export default function DevicesScreen() {
     toggleDevice,
     updatingDeviceId,
   } = useIoT();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   return (
     <AppScreen>
@@ -37,7 +45,7 @@ export default function DevicesScreen() {
             <Ionicons
               name="cloud-offline-outline"
               size={18}
-              color={colors.danger}
+              color={theme.colors.danger}
             />
             <Text style={styles.gatewayStatusText}>
               IoT Gateway is disconnected.
@@ -101,87 +109,91 @@ export default function DevicesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: spacing.xxl,
-  },
-  gatewayStatus: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-    padding: spacing.md,
-    borderRadius: radii.sm,
-    backgroundColor: colors.dangerSoft,
-  },
-  gatewayStatusText: {
-    color: colors.danger,
-    ...typography.caption,
-  },
-  feedback: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-  },
-  errorBox: {
-    padding: spacing.lg,
-    marginHorizontal: spacing.xl,
-    borderRadius: radii.sm,
-    backgroundColor: colors.dangerSoft,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: colors.danger,
-    marginBottom: 10,
-  },
-  retryButton: {
-    alignSelf: "flex-start",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.sm,
-    backgroundColor: colors.danger,
-  },
-  retryButtonText: {
-    color: colors.white,
-    fontWeight: "bold",
-  },
-  deviceCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: spacing.lg,
-    marginHorizontal: spacing.xl,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    marginBottom: spacing.md,
-    ...shadows.card,
-  },
-  deviceInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    gap: spacing.md,
-  },
-  deviceDetails: {
-    flex: 1,
-  },
-  deviceName: {
-    color: colors.ink,
-    ...typography.body,
-    fontWeight: "700",
-  },
-  deviceType: {
-    color: colors.muted,
-    marginTop: spacing.xs,
-    ...typography.caption,
-  },
-  deviceState: {
-    color: colors.teal,
-    ...typography.caption,
-    fontWeight: "700",
-    marginTop: spacing.xs,
-  },
-});
+function createStyles(theme: AppTheme) {
+  const { colors, shadows } = theme;
+
+  return StyleSheet.create({
+    container: {
+      paddingBottom: spacing.xxl,
+    },
+    gatewayStatus: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.lg,
+      padding: spacing.md,
+      borderRadius: radii.sm,
+      backgroundColor: colors.dangerSoft,
+    },
+    gatewayStatusText: {
+      color: colors.danger,
+      ...typography.caption,
+    },
+    feedback: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.lg,
+    },
+    errorBox: {
+      padding: spacing.lg,
+      marginHorizontal: spacing.xl,
+      borderRadius: radii.sm,
+      backgroundColor: colors.dangerSoft,
+      marginBottom: spacing.lg,
+    },
+    errorText: {
+      color: colors.danger,
+      marginBottom: 10,
+    },
+    retryButton: {
+      alignSelf: "flex-start",
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: radii.sm,
+      backgroundColor: colors.danger,
+    },
+    retryButtonText: {
+      color: colors.white,
+      fontWeight: "bold",
+    },
+    deviceCard: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: spacing.lg,
+      marginHorizontal: spacing.xl,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      marginBottom: spacing.md,
+      ...shadows.card,
+    },
+    deviceInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+      gap: spacing.md,
+    },
+    deviceDetails: {
+      flex: 1,
+    },
+    deviceName: {
+      color: colors.ink,
+      ...typography.body,
+      fontWeight: "700",
+    },
+    deviceType: {
+      color: colors.muted,
+      marginTop: spacing.xs,
+      ...typography.caption,
+    },
+    deviceState: {
+      color: colors.teal,
+      ...typography.caption,
+      fontWeight: "700",
+      marginTop: spacing.xs,
+    },
+  });
+}

@@ -9,10 +9,18 @@ import {
 } from "react-native";
 import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  type AppTheme,
+} from "../../theme";
 
 export default function SensorsScreen() {
   const { sensors, loading, sensorError, refreshSensors } = useIoT();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   return (
     <AppScreen>
@@ -76,7 +84,9 @@ export default function SensorsScreen() {
             loading && styles.refreshButtonDisabled,
           ]}
         >
-          {loading && <ActivityIndicator color={colors.white} size="small" />}
+          {loading && (
+            <ActivityIndicator color={theme.colors.white} size="small" />
+          )}
           <Text style={styles.refreshButtonText}>
             {loading ? "Refreshing..." : "Refresh Sensors"}
           </Text>
@@ -86,79 +96,83 @@ export default function SensorsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: spacing.xxl,
-  },
-  readings: {
-    gap: spacing.md,
-    marginHorizontal: spacing.xl,
-  },
-  sensorCard: {
-    padding: spacing.lg,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    ...shadows.card,
-  },
-  sensorLabel: {
-    color: colors.muted,
-    ...typography.body,
-    marginTop: spacing.md,
-  },
-  sensorValue: {
-    color: colors.amber,
-    ...typography.metric,
-    marginTop: spacing.xs,
-  },
-  feedback: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-  },
-  errorBox: {
-    padding: spacing.lg,
-    borderRadius: radii.sm,
-    backgroundColor: colors.dangerSoft,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: colors.danger,
-    marginBottom: 10,
-  },
-  retryButton: {
-    alignSelf: "flex-start",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.sm,
-    backgroundColor: colors.danger,
-  },
-  retryButtonText: {
-    color: colors.white,
-    fontWeight: "bold",
-  },
-  refreshButton: {
-    minHeight: 48,
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.xl,
-    borderRadius: radii.sm,
-    backgroundColor: colors.teal,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 10,
-  },
-  refreshButtonPressed: {
-    opacity: 0.8,
-  },
-  refreshButtonDisabled: {
-    opacity: 0.6,
-  },
-  refreshButtonText: {
-    color: colors.white,
-    ...typography.body,
-    fontWeight: "700",
-  },
-});
+function createStyles(theme: AppTheme) {
+  const { colors, shadows } = theme;
+
+  return StyleSheet.create({
+    container: {
+      paddingBottom: spacing.xxl,
+    },
+    readings: {
+      gap: spacing.md,
+      marginHorizontal: spacing.xl,
+    },
+    sensorCard: {
+      padding: spacing.lg,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      ...shadows.card,
+    },
+    sensorLabel: {
+      color: colors.muted,
+      ...typography.body,
+      marginTop: spacing.md,
+    },
+    sensorValue: {
+      color: colors.amber,
+      ...typography.metric,
+      marginTop: spacing.xs,
+    },
+    feedback: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.lg,
+    },
+    errorBox: {
+      padding: spacing.lg,
+      borderRadius: radii.sm,
+      backgroundColor: colors.dangerSoft,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.lg,
+    },
+    errorText: {
+      color: colors.danger,
+      marginBottom: 10,
+    },
+    retryButton: {
+      alignSelf: "flex-start",
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: radii.sm,
+      backgroundColor: colors.danger,
+    },
+    retryButtonText: {
+      color: colors.white,
+      fontWeight: "bold",
+    },
+    refreshButton: {
+      minHeight: 48,
+      marginHorizontal: spacing.xl,
+      marginTop: spacing.xl,
+      borderRadius: radii.sm,
+      backgroundColor: colors.teal,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 10,
+    },
+    refreshButtonPressed: {
+      opacity: 0.8,
+    },
+    refreshButtonDisabled: {
+      opacity: 0.6,
+    },
+    refreshButtonText: {
+      color: colors.white,
+      ...typography.body,
+      fontWeight: "700",
+    },
+  });
+}

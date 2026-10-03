@@ -6,9 +6,12 @@ import {
 } from "@react-navigation/drawer";
 
 import { Ionicons } from "@expo/vector-icons";
-import { colors, radii, spacing, typography } from "../theme";
+import { radii, spacing, typography, useTheme, type AppTheme } from "../theme";
 
 export default function CustomDrawerContent(props: any) {
+  const theme = useTheme();
+  const styles = createStyles(theme);
+
   return (
     <DrawerContentScrollView
       {...props}
@@ -20,7 +23,7 @@ export default function CustomDrawerContent(props: any) {
           <Ionicons
             name="hardware-chip-outline"
             size={38}
-            color={colors.teal}
+            color={theme.colors.teal}
           />
         </View>
 
@@ -37,35 +40,39 @@ export default function CustomDrawerContent(props: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+function createStyles(theme: AppTheme) {
+  const { colors } = theme;
 
-  header: {
-    padding: spacing.xl,
-    alignItems: "center",
-    backgroundColor: colors.tealSoft,
-    margin: spacing.md,
-    borderRadius: radii.md,
-  },
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+    },
 
-  logoContainer: {
-    marginBottom: spacing.sm,
-  },
+    header: {
+      padding: spacing.xl,
+      alignItems: "center",
+      backgroundColor: colors.tealSoft,
+      margin: spacing.md,
+      borderRadius: radii.md,
+    },
 
-  title: {
-    color: colors.ink,
-    ...typography.heading,
-  },
+    logoContainer: {
+      marginBottom: spacing.sm,
+    },
 
-  subtitle: {
-    color: colors.muted,
-    ...typography.caption,
-    marginTop: spacing.xs,
-  },
+    title: {
+      color: colors.ink,
+      ...typography.heading,
+    },
 
-  menu: {
-    marginTop: spacing.sm,
-  },
-});
+    subtitle: {
+      color: colors.muted,
+      ...typography.caption,
+      marginTop: spacing.xs,
+    },
+
+    menu: {
+      marginTop: spacing.sm,
+    },
+  });
+}

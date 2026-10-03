@@ -2,7 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  type AppTheme,
+} from "../../theme";
 
 export default function DashboardScreen() {
   // const [deviceStatus, setDeviceStatus] = useState(
@@ -14,6 +20,8 @@ export default function DashboardScreen() {
 
   const { devices, gatewayConnected, sensors, toggleDevice, updatingDeviceId } =
     useIoT();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   return (
     <AppScreen>
@@ -109,82 +117,86 @@ export default function DashboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: spacing.xxl,
-  },
-  sensorRow: {
-    flexDirection: "row",
-    gap: spacing.md,
-    paddingHorizontal: spacing.xl,
-  },
-  sensorCard: {
-    flex: 1,
-    padding: spacing.lg,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    ...shadows.card,
-  },
-  sensorLabel: {
-    color: colors.muted,
-    ...typography.caption,
-  },
-  sensorValue: {
-    color: colors.ink,
-    ...typography.metric,
-    marginTop: spacing.sm,
-  },
-  sectionTitle: {
-    color: colors.ink,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.md,
-    marginHorizontal: spacing.xl,
-    ...typography.heading,
-  },
-  deviceCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: spacing.lg,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    ...shadows.card,
-  },
+function createStyles(theme: AppTheme) {
+  const { colors, shadows } = theme;
 
-  deviceInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  return StyleSheet.create({
+    container: {
+      paddingBottom: spacing.xxl,
+    },
+    sensorRow: {
+      flexDirection: "row",
+      gap: spacing.md,
+      paddingHorizontal: spacing.xl,
+    },
+    sensorCard: {
+      flex: 1,
+      padding: spacing.lg,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      ...shadows.card,
+    },
+    sensorLabel: {
+      color: colors.muted,
+      ...typography.caption,
+    },
+    sensorValue: {
+      color: colors.ink,
+      ...typography.metric,
+      marginTop: spacing.sm,
+    },
+    sectionTitle: {
+      color: colors.ink,
+      marginTop: spacing.xxl,
+      marginBottom: spacing.md,
+      marginHorizontal: spacing.xl,
+      ...typography.heading,
+    },
+    deviceCard: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: spacing.lg,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.md,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      ...shadows.card,
+    },
 
-  deviceIcon: {
-    marginRight: spacing.md,
-    color: colors.teal,
-  },
+    deviceInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
 
-  deviceName: {
-    color: colors.ink,
-    ...typography.body,
-    fontWeight: "700",
-  },
+    deviceIcon: {
+      marginRight: spacing.md,
+      color: colors.teal,
+    },
 
-  deviceType: {
-    color: colors.muted,
-    marginTop: spacing.xs,
-    ...typography.caption,
-  },
+    deviceName: {
+      color: colors.ink,
+      ...typography.body,
+      fontWeight: "700",
+    },
 
-  deviceStatus: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
+    deviceType: {
+      color: colors.muted,
+      marginTop: spacing.xs,
+      ...typography.caption,
+    },
 
-  sensorHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
+    deviceStatus: {
+      fontSize: 14,
+      fontWeight: "bold",
+    },
 
-  deviceState: {},
-});
+    sensorHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+
+    deviceState: {},
+  });
+}

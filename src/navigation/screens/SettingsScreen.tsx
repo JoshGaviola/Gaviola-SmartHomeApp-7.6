@@ -1,16 +1,29 @@
-import { useState } from "react";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { AppScreen, ScreenHeader } from "../../components/AppScreen";
 import { useIoT } from "../../context/IoTContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  type AppTheme,
+} from "../../theme";
 
 export default function SettingsScreen() {
-  const { gatewayConnected, setGatewayConnected } = useIoT();
-  const [notifications, setNotifications] = useState(true);
-  const [autoConnect, setAutoConnect] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const {
+    autoConnect,
+    darkMode,
+    gatewayConnected,
+    notifications,
+    setAutoConnect,
+    setDarkMode,
+    setGatewayConnected,
+    setNotifications,
+  } = useIoT();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   return (
     <AppScreen>
@@ -124,82 +137,86 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: spacing.xxl,
-  },
-  sectionTitle: {
-    color: colors.ink,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    marginTop: spacing.lg,
-    ...typography.heading,
-  },
+function createStyles(theme: AppTheme) {
+  const { colors, shadows } = theme;
 
-  settingCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: spacing.lg,
-    marginHorizontal: spacing.xl,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    marginBottom: spacing.md,
-    ...shadows.card,
-  },
+  return StyleSheet.create({
+    container: {
+      paddingBottom: spacing.xxl,
+    },
+    sectionTitle: {
+      color: colors.ink,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.md,
+      marginTop: spacing.lg,
+      ...typography.heading,
+    },
 
-  settingInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
+    settingCard: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: spacing.lg,
+      marginHorizontal: spacing.xl,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      marginBottom: spacing.md,
+      ...shadows.card,
+    },
 
-  settingText: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
+    settingInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
 
-  settingName: {
-    color: colors.ink,
-    ...typography.body,
-    fontWeight: "700",
-  },
+    settingText: {
+      marginLeft: spacing.md,
+      flex: 1,
+    },
 
-  settingDescription: {
-    color: colors.muted,
-    ...typography.caption,
-    marginTop: spacing.xs,
-  },
+    settingName: {
+      color: colors.ink,
+      ...typography.body,
+      fontWeight: "700",
+    },
 
-  connectionCard: {
-    padding: spacing.lg,
-    marginHorizontal: spacing.xl,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    ...shadows.card,
-  },
+    settingDescription: {
+      color: colors.muted,
+      ...typography.caption,
+      marginTop: spacing.xs,
+    },
 
-  connectionInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+    connectionCard: {
+      padding: spacing.lg,
+      marginHorizontal: spacing.xl,
+      borderRadius: radii.md,
+      backgroundColor: colors.surface,
+      ...shadows.card,
+    },
 
-  gatewayControl: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: spacing.lg,
-  },
+    connectionInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
 
-  connectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginLeft: spacing.md,
-  },
+    gatewayControl: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: spacing.lg,
+    },
 
-  connectionStatus: {
-    color: colors.muted,
-    ...typography.caption,
-    marginLeft: spacing.md,
-    marginTop: spacing.xs,
-  },
-});
+    connectionTitle: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginLeft: spacing.md,
+    },
+
+    connectionStatus: {
+      color: colors.muted,
+      ...typography.caption,
+      marginLeft: spacing.md,
+      marginTop: spacing.xs,
+    },
+  });
+}

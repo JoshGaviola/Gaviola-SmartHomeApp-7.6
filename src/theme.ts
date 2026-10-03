@@ -1,6 +1,12 @@
+import {
+    createContext,
+    createElement,
+    useContext,
+    type ReactNode,
+} from "react";
 import { Platform } from "react-native";
 
-export const colors = {
+const lightColors = {
   background: "#F7F4EE",
   surface: "#FFFDF8",
   surfaceMuted: "#EEEAE1",
@@ -13,6 +19,22 @@ export const colors = {
   amberSoft: "#FFF0D8",
   danger: "#B9433D",
   dangerSoft: "#FBE8E5",
+  white: "#FFFFFF",
+} as const;
+
+const darkColors = {
+  background: "#172321",
+  surface: "#22312E",
+  surfaceMuted: "#2C3B37",
+  ink: "#F5F1E8",
+  muted: "#B4C0BA",
+  border: "#40504B",
+  teal: "#63D0BE",
+  tealSoft: "#244A43",
+  amber: "#F3B35A",
+  amberSoft: "#4B3822",
+  danger: "#F28B82",
+  dangerSoft: "#4A2C2A",
   white: "#FFFFFF",
 } as const;
 
@@ -70,15 +92,56 @@ export const typography = {
   },
 } as const;
 
-export const shadows = {
-  card: Platform.select({
-    ios: {
-      shadowColor: colors.ink,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.06,
-      shadowRadius: 12,
-    },
-    android: { elevation: 2 },
-    default: {},
-  }),
-} as const;
+function createShadows(ink: string) {
+  return {
+    card: Platform.select({
+      ios: {
+        shadowColor: ink,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+      },
+      android: { elevation: 2 },
+      default: {},
+    }),
+  } as const;
+}
+
+export type AppTheme = {
+  colors: typeof lightColors | typeof darkColors;
+  spacing: typeof spacing;
+  radii: typeof radii;
+  typography: typeof typography;
+  shadows: ReturnType<typeof createShadows>;
+};
+
+export function createTheme(darkMode: boolean): AppTheme {
+  const themeColors = darkMode ? darkColors : lightColors;
+
+  return {
+    colors: themeColors,
+    spacing,
+    radii,
+    typography,
+    shadows: createShadows(themeColors.ink),
+  };
+}
+
+export const colors = lightColors;
+export const shadows = createShadows(lightColors.ink);
+
+const ThemeContext = createContext<AppTheme>(createTheme(false));
+
+export function ThemeProvider({
+  theme,
+  children,
+}: {
+  theme: AppTheme;
+  children: ReactNode;
+}) {
+  return createElement(ThemeContext.Provider, { value: theme }, children);
+}
+
+export function useTheme() {
+  return useContext(ThemeContext);
+}
