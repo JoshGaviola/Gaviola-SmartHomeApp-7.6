@@ -1,5 +1,26 @@
 # Welcome to your Expo app 👋
 
+## Backend integration
+
+The app reads the backend base URL from `EXPO_PUBLIC_API_URL`. Copy `.env.example` to
+`.env.local` and replace the value with the backend URL. For a physical device, use
+the development machine's LAN IP instead of `localhost`.
+
+When no API URL is configured, the app uses its local simulator so frontend work
+continues to work offline.
+
+The service layer expects these endpoints:
+
+| Method  | Endpoint                  | Response                                        |
+| ------- | ------------------------- | ----------------------------------------------- |
+| `GET`   | `/api/gateway/health`     | Any successful JSON response                    |
+| `GET`   | `/api/devices`            | `Device[]` or `{ "devices": Device[] }`         |
+| `GET`   | `/api/sensors/latest`     | `SensorData` or `{ "sensors": SensorData }`     |
+| `PATCH` | `/api/devices/:id/status` | Updated `Device[]` or `{ "devices": Device[] }` |
+
+Device status updates send `{ "status": boolean }`. Non-2xx responses may include
+an optional `{ "message": string }` body.
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started

@@ -11,6 +11,7 @@ import {
     type SensorData,
 } from "../models/IoTModels";
 import {
+    checkGatewayHealth,
     getDevices,
     getSensorData,
     updateDeviceStatus,
@@ -42,7 +43,7 @@ type IoTContextType = {
 const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({ children }: { children: React.ReactNode }) {
-  const [gatewayConnected, setGatewayConnected] = useState(true);
+  const [gatewayConnected, setGatewayConnected] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [autoConnect, setAutoConnectState] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -90,8 +91,29 @@ export function IoTProvider({ children }: { children: React.ReactNode }) {
 
   const setAutoConnect = (enabled: boolean) => {
     setAutoConnectState(enabled);
-    setGatewayConnected(enabled);
   };
+
+  useEffect(() => {
+    let active = true;
+
+    const connectToGateway = async () => {
+      if (!autoConnect) {
+        setGatewayConnected(false);
+        return;
+      }
+
+      const connected = await checkGatewayHealth();
+      if (active) {
+        setGatewayConnected(connected);
+      }
+    };
+
+    void connectToGateway();
+
+    return () => {
+      active = false;
+    };
+  }, [autoConnect]);
 
   useEffect(() => {
     if (!gatewayConnected) {
