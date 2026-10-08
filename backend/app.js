@@ -11,6 +11,15 @@ const port = Number(process.env.PORT || 3000);
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (_request, response) => {
+  response.json({
+    service: "Gaviola Smart Home Backend",
+    status: "ok",
+    health: "/health",
+    api: ["/api/gateway/health", "/api/devices", "/api/sensors/latest"],
+  });
+});
+
 app.get("/health", (_request, response) => {
   response.json({ status: "ok" });
 });
